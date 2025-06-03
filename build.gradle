@@ -37,6 +37,7 @@ dependencies {
 	// 크롤링 관련 추가
 	implementation 'org.jsoup:jsoup:1.18.1'                    // HTML 파싱
 	implementation 'org.seleniumhq.selenium:selenium-java:4.25.0'  // 동적 크롤링
+	implementation 'io.github.bonigarcia:webdrivermanager:6.1.0'
 
 	// 개발/테스트용 DB 추가
 	runtimeOnly 'com.h2database:h2'                           // 개발용 인메모리 DB
