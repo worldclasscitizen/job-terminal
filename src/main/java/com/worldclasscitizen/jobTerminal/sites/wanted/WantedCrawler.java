@@ -32,7 +32,7 @@ public class WantedCrawler {
         List<String> jobLinks = new ArrayList<>();
         for (WebElement card : jobCards) {
             WebElement anchor = card.findElement(By.tagName("a"));
-            String link = "https://www.wanted.co.kr" + anchor.getAttribute("href");
+            String link = "https://www.wanted.co.kr" + anchor.getDomAttribute("href");
             jobLinks.add(link);
         }
     }
