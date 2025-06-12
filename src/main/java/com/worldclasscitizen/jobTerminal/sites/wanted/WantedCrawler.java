@@ -1,13 +1,18 @@
 package com.worldclasscitizen.jobTerminal.sites.wanted;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class WantedCrawler {
 
@@ -29,6 +34,32 @@ public class WantedCrawler {
             Thread.sleep(2000); // 페이지 로딩 대기
         } catch (InterruptedException e) {
             System.err.println("페이지 로딩 중 Thread 가 Interrupt 되었습니다. " + e.getMessage());
+        }
+
+        // 무한 스크롤 전 카드 개수
+        int prevCardCount = driver.findElements(By.cssSelector("div[data-cy='job-card']")).size();
+
+        // 페이지 로딩을 위한 WebDriverWait 준비 (최대 10초로 설정)
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        // 스크롤을 위한 JavascriptExecutor 준비
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+
+        while (true) {
+            // 1. 페이지 끝까지 스크롤
+            jsExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+
+            try {
+                // 2. prevCount 보다 카드 수가 늘어날 때까지 대기
+                wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(
+                        By.cssSelector("div[data-cy='job-card']"),
+                        prevCardCount
+                ));
+                // 3. 새로 늘어난 카드 개수로 prevCount 업데이트
+                prevCardCount = driver.findElements(By.cssSelector("div[data-cy='job-card']")).size();
+            } catch (TimeoutException toe) {
+                break;
+            }
         }
 
         List<WebElement> jobCards = driver.findElements(By.cssSelector("div[data-cy='job-card']")); // 실제 클래스명 확인 필요
